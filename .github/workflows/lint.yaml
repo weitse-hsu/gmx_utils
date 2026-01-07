@@ -1,0 +1,29 @@
+name: lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2.3.4
+      - uses: actions/setup-python@v2.2.2
+        with:
+          python-version: '3.10'
+      - name: Install the package
+        run: |
+          pip install .
+
+      - name: Install flake8
+        run: |
+          pip install flake8
+
+      - name: Run flake8
+        run: |
+          flake8 general_utils
