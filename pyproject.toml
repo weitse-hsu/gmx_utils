@@ -36,7 +36,8 @@ requires-python = ">=3.8"
 #   - pyrmsd: https://github.com/weitse-hsu/pyrmsd
 
 # Entry point for CLI commands
-# [project.scripts]
+[project.scripts]
+prep_simulation = "gmx_utils.cli.prep_simulation:main"
 
 # Update the urls once the hosting is set up.
 #[project.urls]
