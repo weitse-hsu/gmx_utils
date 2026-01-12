@@ -26,8 +26,15 @@ def initialize(args):
         '--mdp_dir',
         type=str,
         help='The directory containing input MDP files for ion addition (ions.mdp), energy minimization (em.mdp), \
-            NVT equilibration (nvt_equil.mdp), and NPT equilibration (npt_equil.mdp). If not specified, the default \
-            MDP files in the package will be used.'
+            NVT equilibration (nvt_equil.mdp), and NPT equilibration (npt_equil.mdp), and MD production (md.mdp). \
+            If not specified, the default MDP files in the package will be used.'
+    )
+    parser.add_argument(
+        '-n',
+        '--n_replicates',
+        type=int,
+        default=3,
+        help='Number of replicates for production simulations. The default is 3.'
     )
     parser.add_argument(
         '-l',
@@ -174,6 +181,7 @@ def main():
         '-maxwarn', '1'
     ]
     print(f'\nRunning command 1: {" ".join(gmx_args)}')
+    cmd_list.append(' '.join(gmx_args))
     returncode, stdout = gmx_utils.run_gmx_cmd(gmx_args)
 
     gmx_args = ['gmx', 'mdrun', '-deffnm', 'equil/NVT/equil']
@@ -192,12 +200,46 @@ def main():
         '-maxwarn', '2'
     ]
     print(f'\nRunning command 1: {" ".join(gmx_args)}')
+    cmd_list.append(' '.join(gmx_args))
     returncode, stdout = gmx_utils.run_gmx_cmd(gmx_args)
 
     gmx_args = ['gmx', 'mdrun', '-deffnm', 'equil/NPT/equil']
     print(f'\nRunning command 2: {" ".join(gmx_args)}')
     cmd_list.append(' '.join(gmx_args))
     returncode, stdout = gmx_utils.run_gmx_cmd(gmx_args, prompt_input=None)
+
+    print("\n7. Preparation for production runs")
+    print("=================================")
+    if args.n_replicates > 1:
+        for rep in range(1, args.n_replicates + 1):
+            dst_prod = os.path.join('production', f'rep_{rep}')
+            os.makedirs(dst_prod, exist_ok=True)
+
+            gmx_args = [
+                'gmx', 'grompp',
+                '-f', os.path.join(mdp_dir, 'md.mdp'),
+                '-c', os.path.join('equil', 'NPT', 'equil.gro'),
+                '-p', input_top,
+                '-o', os.path.join(dst_prod, 'md.tpr'),
+                '-t', os.path.join('equil', 'NPT', 'equil.cpt'),
+                '-maxwarn', '1'
+            ]
+            print(f'\nRunning command for replicate {rep}: {" ".join(gmx_args)}')
+            cmd_list.append(' '.join(gmx_args))
+            returncode, stdout = gmx_utils.run_gmx_cmd(gmx_args)
+    else:
+        gmx_args = [
+            'gmx', 'grompp',
+            '-f', os.path.join(mdp_dir, 'md.mdp'),
+            '-c', os.path.join('equil', 'NPT', 'equil.gro'),
+            '-p', input_top,
+            '-o', os.path.join('production', 'md.tpr'),
+            '-t', os.path.join('equil', 'NPT', 'equil.cpt'),
+            '-maxwarn', '1'
+        ]
+        print(f'\nRunning command: {" ".join(gmx_args)}')
+        cmd_list.append(' '.join(gmx_args))
+        returncode, stdout = gmx_utils.run_gmx_cmd(gmx_args)
 
     print("Summary of commands executed:")
     for cmd in cmd_list:
