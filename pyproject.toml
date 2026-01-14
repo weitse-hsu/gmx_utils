@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 # Self-descriptive entries which should always be present
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
-name = "gmx_utils"  # the name of the package
-description = "RFbind aims to provide an augmented dataset for training neural networks for protein-ligand binding affinity prediction."
+name = "md_utils"  # the name of the package
+description = ""
 dynamic = ["version"]
 readme = "README.md"
 authors = [
@@ -37,9 +37,9 @@ requires-python = ">=3.8"
 
 # Entry point for CLI commands
 [project.scripts]
-prep_simulation = "gmx_utils.cli.prep_simulation:main"
-process_gmx_traj = "gmx_utils.cli.process_gmx_traj:main"
-create_index_grps = "gmx_utils.cli.create_index_grps:main"
+prep_simulation = "md_utils.cli.prep_simulation:main"
+process_gmx_traj = "md_utils.cli.process_gmx_traj:main"
+create_index_grps = "md_utils.cli.create_index_grps:main"
 
 # Update the urls once the hosting is set up.
 #[project.urls]
@@ -98,4 +98,4 @@ match = ["*"]
 default-tag = "0.0.0"  # Originally 1.0.0
 
 [tool.versioningit.write]
-file = "gmx_utils/_version.py"
+file = "md_utils/_version.py"

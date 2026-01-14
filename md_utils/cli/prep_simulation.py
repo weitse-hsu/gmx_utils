@@ -118,6 +118,7 @@ def main():
         '-c', os.path.join('solv_ions', 'solv.gro'),
         '-p', input_top,
         '-o', os.path.join('solv_ions', 'ions.tpr'),
+        '-po', os.path.join('solv_ions', 'mdout.mdp'),
         '-maxwarn', '1'
     ]
     print(f'\nRunning command 1: {" ".join(gmx_args)}')
@@ -159,6 +160,7 @@ def main():
         '-c', os.path.join('solv_ions', 'ions.gro'),
         '-p', input_top,
         '-o', os.path.join('em', 'em.tpr'),
+        '-po', os.path.join('em', 'mdout.mdp'),
         '-maxwarn', '1'
     ]
     print(f'\nRunning command 1: {" ".join(gmx_args)}')
@@ -178,6 +180,7 @@ def main():
         '-c', os.path.join('em', 'em.gro'),
         '-p', input_top,
         '-o', os.path.join('equil', 'NVT', 'equil.tpr'),
+        '-po', os.path.join('equil', 'NVT', 'mdout.mdp'),
         '-maxwarn', '1'
     ]
     print(f'\nRunning command 1: {" ".join(gmx_args)}')
@@ -197,6 +200,7 @@ def main():
         '-c', os.path.join('equil', 'NVT', 'equil.gro'),
         '-p', input_top,
         '-o', os.path.join('equil', 'NPT', 'equil.tpr'),
+        '-po', os.path.join('equil', 'NPT', 'mdout.mdp'),
         '-maxwarn', '2'
     ]
     print(f'\nRunning command 1: {" ".join(gmx_args)}')
@@ -222,6 +226,7 @@ def main():
                 '-p', input_top,
                 '-o', os.path.join(dst_prod, 'md.tpr'),
                 '-t', os.path.join('equil', 'NPT', 'equil.cpt'),
+                '-po', os.path.join(dst_prod, 'mdout.mdp'),
                 '-maxwarn', '1'
             ]
             print(f'\nRunning command for replicate {rep}: {" ".join(gmx_args)}')
@@ -235,6 +240,7 @@ def main():
             '-p', input_top,
             '-o', os.path.join('production', 'md.tpr'),
             '-t', os.path.join('equil', 'NPT', 'equil.cpt'),
+            '-po', os.path.join('production', 'mdout.mdp'),
             '-maxwarn', '1'
         ]
         print(f'\nRunning command: {" ".join(gmx_args)}')
