@@ -45,6 +45,7 @@ create_index_grps = "md_utils.cli.simulation.create_index_grps:main"
 
 # structure
 identify_pocket = "md_utils.cli.structure.identify_pocket:main"
+identify_ss_residues = "md_utils.cli.structure.identify_ss_residues:main"
 
 # Update the urls once the hosting is set up.
 #[project.urls]
