@@ -3,7 +3,7 @@ import sys
 import time
 import argparse
 from general_utils import utils
-from gmx_utils import gmx_utils
+from md_utils.simulation import gmx_utils
 
 
 def initialize(args):

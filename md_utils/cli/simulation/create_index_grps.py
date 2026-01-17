@@ -3,7 +3,7 @@ import sys
 import tempfile
 import argparse
 from general_utils import utils
-from gmx_utils import gmx_utils, gmx_parser
+from md_utils.simulation import gmx_utils, gmx_parser
 
 
 def initialize(args):

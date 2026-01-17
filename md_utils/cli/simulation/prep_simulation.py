@@ -6,8 +6,8 @@ import math
 import shutil
 import argparse
 from general_utils import utils
-from gmx_utils import gmx_utils
-from gmx_utils import data
+from md_utils import data
+from md_utils.simulation import gmx_utils
 
 
 def initialize(args):
