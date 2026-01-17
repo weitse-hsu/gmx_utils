@@ -9,7 +9,8 @@ from pymol import cmd
 
 def initialize(args):
     parser = argparse.ArgumentParser(
-        description="Identify corresponding residues composing secondary structure domains in a given protein structure."
+        description="Identify corresponding residues composing secondary structure domains in a given \
+            protein structure."
     )
     parser.add_argument(
         "-i",
@@ -57,8 +58,8 @@ def main():
     cmd.reinitialize()
     cmd.load(args.input, "structure")
     model = cmd.get_model(f"structure and ss {args.ss_type} and name CA")  # Use CA atoms to get one entry per residue
-    
-    segment_dict = {}  # A dictionary to store segments for each chain, e.g., {"A": [("A10", "K20"), ("T30", "A35")], "B": [...]}
+
+    segment_dict = {}  # A dictionary to store segments for each chain, e.g., {"A": [("A10", "K20"), ("T30", "A35")], "B": [...]}  # noqa: E501
     for i, a in enumerate(model.atom):
         res = f"{protein.convert_res_code(a.resn)}{a.resi}"
         chain = a.chain
@@ -77,7 +78,7 @@ def main():
                 segment_dict[model.atom[i-1].chain].append((start_res, end_res))
                 start_res = res
                 prev_resi = curr_resi
-    
+
     end_res = f"{protein.convert_res_code(model.atom[-1].resn)}{model.atom[-1].resi}"
     segment_dict[chain].append((start_res, end_res))
 
@@ -90,7 +91,7 @@ def main():
             if (end_idx - start_idx + 1) >= args.min_length:
                 filtered_segments.append((start, end))
         segment_dict[chain] = filtered_segments
-    
+
     for chain, segments in segment_dict.items():
         print(f"Chain {chain}:")
         for start, end in segments:
@@ -104,3 +105,5 @@ def main():
             selection_name = f"{args.ss_type}_{chain}_{idx}"
             pymol_selection = f"chain {chain} and resi {start[1:]}-{end[1:]}"
             print(f"select {selection_name}, {pymol_selection}")
+
+    print(f"Elapsed time: {utils.format_time(time.time() - t1)}")
