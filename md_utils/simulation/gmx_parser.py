@@ -1,3 +1,7 @@
+import os
+import re
+import six
+import warnings
 from collections import OrderedDict
 
 
@@ -42,7 +46,10 @@ def parse_ndx(ndx_file):
     return groups, group_str
 
 
-class MDP(odict):
+class ParseError(Exception):
+    """Error raised during parsing a file."""
+
+class MDP(OrderedDict):
     """
     A class that represents a GROMACS MDP file. Note that an MDP instance is an ordered dictionary,
     with the i-th key corresponding to the i-th line in the MDP file. Comments and blank lines are
@@ -87,6 +94,36 @@ class MDP(odict):
             self.input_mdp = os.path.realpath(input_mdp)
             self.read()
 
+    def _convert_to_numeric(self, s):
+        """
+        Converts the input to a numerical type when possible. This internal function is used for the MDP parser.
+
+        Parameters
+        ----------
+        s : any
+            The input value to be converted to a numerical type if possible. The data type of :code:`s` is
+            usually :code:`str` but can be any. However, if :code:`s` is not a string, it will be returned as is.
+
+        Returns
+        -------
+        numerical : any
+            The converted numerical value. If :code:`s` can be converted to a single numerical value,
+            that value is returned as an :code:`int` or :code:`float`. If :code:`s` can be converted to
+            multiple numerical values, a list containing those values is returned.
+            If :code:`s` cannot be converted to a numerical value, :code:`s` is returned as is.
+        """
+        if type(s) is not str:
+            return s
+        for converter in int, float, str:  # try them in increasing order of lenience
+            try:
+                s = [converter(i) for i in s.split()]
+                if len(s) == 1:
+                    return s[0]
+                else:
+                    return s
+            except (ValueError, AttributeError):
+                pass
+
     def read(self):
         """
         Reads and parses the input MDP file.
@@ -97,7 +134,7 @@ class MDP(odict):
         def COMMENT(i):
             return f"C{i:04d}"
 
-        data = odict()
+        data = OrderedDict()
         iblank = icomment = 0
         with open(self.input_mdp) as mdp:
             for line in mdp:
@@ -115,7 +152,7 @@ class MDP(odict):
                 m = self.PARAMETER.match(line)
                 if m:
                     parameter = m.group("parameter")
-                    value = utils._convert_to_numeric(m.group("value"))
+                    value = self._convert_to_numeric(m.group("value"))
                     data[parameter] = value
                 else:
                     err_msg = f"{os.path.basename(self.input_mdp)!r}: unknown line in mdp file, {line!r}"

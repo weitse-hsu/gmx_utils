@@ -5,9 +5,11 @@ import time
 import math
 import shutil
 import argparse
+import warnings
+warnings.filterwarnings("ignore", category=SyntaxWarning)
 from general_utils import utils
 from md_utils import data
-from md_utils.simulation import gmx_utils
+from md_utils.simulation import gmx_utils, gmx_parser
 
 
 def initialize(args):
@@ -35,6 +37,13 @@ def initialize(args):
         type=int,
         default=3,
         help='Number of replicates for production simulations. The default is 3.'
+    )
+    parser.add_argument(
+        '-t',
+        '--t_simulation',
+        type=float,
+        help='Total simulation time for production runs in ns. The default is to use the time specified in \
+            the md.mdp file, which should be 500 ns.',
     )
     parser.add_argument(
         '-l',
@@ -219,9 +228,18 @@ def main():
             dst_prod = os.path.join('production', f'rep_{rep}')
             os.makedirs(dst_prod, exist_ok=True)
 
+            md_mdp_path = os.path.join(mdp_dir, 'md.mdp')
+            if args.t_simulation:
+                md_mdp = gmx_parser.MDP(md_mdp_path)
+                nsteps = int(args.t_simulation * 1E6 / (md_mdp['dt'] * 1000))  # Convert ns to steps
+                md_mdp['nsteps'] = nsteps
+                md_mdp.write(os.path.join(dst_prod, 'md_updated.mdp'))
+                print(f"Updated md.mdp with nsteps={nsteps} for a total simulation time of {args.t_simulation} ns.")
+                md_mdp_path = os.path.join(dst_prod, 'md_updated.mdp')
+
             gmx_args = [
                 'gmx', 'grompp',
-                '-f', os.path.join(mdp_dir, 'md.mdp'),
+                '-f', md_mdp_path,
                 '-c', os.path.join('equil', 'NPT', 'equil.gro'),
                 '-p', input_top,
                 '-o', os.path.join(dst_prod, 'md.tpr'),
@@ -233,9 +251,17 @@ def main():
             cmd_list.append(' '.join(gmx_args))
             returncode, stdout = gmx_utils.run_gmx_cmd(gmx_args)
     else:
+        md_mdp_path = os.path.join(mdp_dir, 'md.mdp')
+        if args.t_simulation:
+           md_mdp = gmx_parser.MDP(md_mdp_path)
+           nsteps = int(args.t_simulation * 1E6 / (md_mdp['dt'] * 1000))  # Convert ns to steps
+           md_mdp['nsteps'] = nsteps
+           md_mdp.write('md_updated.mdp')
+           print(f"Updated md.mdp with nsteps={nsteps} for a total simulation time of {args.t_simulation} ns.")
+
         gmx_args = [
             'gmx', 'grompp',
-            '-f', os.path.join(mdp_dir, 'md.mdp'),
+            '-f', md_mdp_path,
             '-c', os.path.join('equil', 'NPT', 'equil.gro'),
             '-p', input_top,
             '-o', os.path.join('production', 'md.tpr'),
