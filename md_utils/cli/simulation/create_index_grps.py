@@ -24,7 +24,7 @@ def initialize(args):
         default="selections.txt",
         help="Path to the input text file containing selections. Each line in the file should contain a \
             GROMACS selection string commented (#) with the desired group name. For example:\
-            '1 | 13 # ICL1'."
+            '1 | 13 # ICL1'. Prepend '#' to comment out any lines that should be ignored. The default is 'selections.txt'."
     )
     parser.add_argument(
         "-n",
@@ -95,6 +95,9 @@ def main():
 
     prompt_input = ''
     for selection in selections:
+        if not selection.strip() or selection.strip().startswith('#'):
+            print(f"Skipping line: {selection.strip()}")
+            continue
         selection = selection.strip()
         if not selection or selection.startswith('#'):
             continue

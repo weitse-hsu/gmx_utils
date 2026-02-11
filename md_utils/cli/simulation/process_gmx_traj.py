@@ -28,7 +28,13 @@ def initialize(args):
         '-o',
         '--output',
         type=str,
-        help='Output GROMACS trajectory file. The default is the original filename with _center.pdb suffix.'
+        help='Output GROMACS trajectory file. The default is the original filename with _center.xtc suffix.'
+    )
+    parser.add_argument(
+        '-n',
+        '--ndx',
+        type=str,
+        help='Index file for GROMACS. If not provided, the default index groups will be used.'
     )
     parser.add_argument(
         '-g',
@@ -86,6 +92,9 @@ def main():
         '-pbc', 'nojump'
     ]
 
+    if args.ndx:
+        gmx_args.extend(['-n', args.ndx])
+
     if args.time_step:
         gmx_args.extend(['-dt', str(args.time_step)])
 
@@ -102,6 +111,9 @@ def main():
         '-pbc', 'whole',
         '-ur', 'compact',
     ]
+
+    if args.ndx:
+        gmx_args.extend(['-n', args.ndx])
 
     if args.time_step:
         gmx_args.extend(['-dt', str(args.time_step)])
