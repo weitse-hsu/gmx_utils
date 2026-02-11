@@ -27,4 +27,4 @@ jobs:
 
       - name: Run flake8
         run: |
-          flake8 gmx_utils
+          flake8 md_utils
