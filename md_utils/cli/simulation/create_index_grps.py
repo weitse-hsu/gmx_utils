@@ -24,7 +24,8 @@ def initialize(args):
         default="selections.txt",
         help="Path to the input text file containing selections. Each line in the file should contain a \
             GROMACS selection string commented (#) with the desired group name. For example:\
-            '1 | 13 # ICL1'. Prepend '#' to comment out any lines that should be ignored. The default is 'selections.txt'."
+            '1 | 13 # ICL1'. Prepend '#' to comment out any lines that should be ignored. The default is\
+            'selections.txt'."
     )
     parser.add_argument(
         "-n",

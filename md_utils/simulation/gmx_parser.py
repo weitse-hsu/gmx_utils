@@ -49,6 +49,7 @@ def parse_ndx(ndx_file):
 class ParseError(Exception):
     """Error raised during parsing a file."""
 
+
 class MDP(OrderedDict):
     """
     A class that represents a GROMACS MDP file. Note that an MDP instance is an ordered dictionary,

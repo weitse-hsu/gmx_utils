@@ -7,9 +7,9 @@ import shutil
 import argparse
 import warnings
 warnings.filterwarnings("ignore", category=SyntaxWarning)
-from general_utils import utils
-from md_utils import data
-from md_utils.simulation import gmx_utils, gmx_parser
+from general_utils import utils  # noqa: E402
+from md_utils import data  # noqa: E402
+from md_utils.simulation import gmx_utils, gmx_parser  # noqa: E402
 
 
 def initialize(args):
@@ -253,11 +253,11 @@ def main():
     else:
         md_mdp_path = os.path.join(mdp_dir, 'md.mdp')
         if args.t_simulation:
-           md_mdp = gmx_parser.MDP(md_mdp_path)
-           nsteps = int(args.t_simulation * 1E6 / (md_mdp['dt'] * 1000))  # Convert ns to steps
-           md_mdp['nsteps'] = nsteps
-           md_mdp.write('md_updated.mdp')
-           print(f"Updated md.mdp with nsteps={nsteps} for a total simulation time of {args.t_simulation} ns.")
+            md_mdp = gmx_parser.MDP(md_mdp_path)
+            nsteps = int(args.t_simulation * 1E6 / (md_mdp['dt'] * 1000))  # Convert ns to steps
+            md_mdp['nsteps'] = nsteps
+            md_mdp.write('md_updated.mdp')
+            print(f"Updated md.mdp with nsteps={nsteps} for a total simulation time of {args.t_simulation} ns.")
 
         gmx_args = [
             'gmx', 'grompp',
